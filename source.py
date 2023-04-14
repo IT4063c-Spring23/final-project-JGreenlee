@@ -54,7 +54,7 @@
 # 
 # Specifically, I will compare countries that developed in the 20th Century (like North America, Western Europe, Australia/NZ, Japan, etc) compared to those that have developed or are still developing in the 21st Century (like China, India, Brazil, etc).
 
-# In[153]:
+# In[187]:
 
 
 # imports
@@ -76,7 +76,7 @@ import sklearn.pipeline as skp
 import sklearn.preprocessing as skpr
 
 
-# In[154]:
+# In[188]:
 
 
 # establish color map and palette
@@ -84,7 +84,7 @@ plt.rcParams["image.cmap"] = "Set1"
 plt.rcParams['axes.prop_cycle'] = plt.cycler(color=plt.cm.Set1.colors)
 
 
-# In[155]:
+# In[189]:
 
 
 # https://data.worldbank.org/indicator/SP.POP.TOTL
@@ -105,7 +105,7 @@ hdi_df = pd.read_csv('data/HDI.csv', index_col="Code")
 # We will scrape Wikipedia to get a list of countries by their 3-letter country code (ISO 3166-1 alpha-3).
 # We will use this list to filter the data from the other datasets.
 
-# In[156]:
+# In[190]:
 
 
 url = "https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes"
@@ -117,7 +117,7 @@ for a in soup.findAll('a', href=True):
         country_codes.append(a.text)
 
 
-# In[157]:
+# In[191]:
 
 
 # filter to only include recognized countries with 3 letter codes
@@ -149,7 +149,7 @@ display(countries_emissions_df.sample(10))
 # # Exploratory Data Analysis
 # ### Let's look at worldwide trends first.
 
-# In[158]:
+# In[192]:
 
 
 world_gdp_growth = gdp_growth_df[gdp_growth_df['Country Name'] == 'World']
@@ -157,7 +157,7 @@ world_emissions_pc = emissions_pc_df[emissions_pc_df['Country Name'] == 'World']
 world_emissions = emissions_df[emissions_df['Country Name'] == 'World']
 
 
-# In[159]:
+# In[193]:
 
 
 def reshape_data_by_year(df):
@@ -183,7 +183,7 @@ def plot_data_by_year(df, start_year="1990", end_year="2019", ax=None, figsize=N
     return ax
 
 
-# In[160]:
+# In[194]:
 
 
 fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 5))
@@ -202,7 +202,7 @@ plt.show()
 
 # Let's break it down per country. Since there are so many countries, we'll staart by displaying the top emitters.
 
-# In[161]:
+# In[195]:
 
 
 TWENTY = 20
@@ -219,7 +219,7 @@ plt.show()
 
 # It would be interesting to see how these top emitting countries compare to the rest of the world. I would expect that the top countries are responsible for a large percentage of the world's emissions.
 
-# In[162]:
+# In[196]:
 
 
 # sum total yearly emissions for top TWENTY countries and rest of world
@@ -258,11 +258,16 @@ plt.show()
 # #### The top 20 countries are responsible for about 80% of the world's emissions.
 # This seems like an occurence of the Pareto Principle, which is found in many areas of life including economics, so it makes sense that it would be found for emissions as well.
 # 
-# <div style="height: 400px; width: 800px">
-#     <iframe src="https://en.wikipedia.org/wiki/Pareto_principle?useskin=minerva#content"
-#         style="position:absolute; zoom: 1.25; transform: scale(.8); transform-origin: 0 0;"
-#         scrolling="yes" height="400px" width="800px">
-#     </iframe>
+# <div id="wiki-embed" style="height: 400px; width: 800px">
+# <style>
+#     #wiki-embed:not(:has(iframe)) {
+#         display: none;
+#     }
+# </style>
+# <iframe src="https://en.wikipedia.org/wiki/Pareto_principle?useskin=minerva#content"
+#     style="position:absolute; zoom: 1.25; transform: scale(.8); transform-origin: 0 0;"
+#     scrolling="yes" height="400px" width="800px">
+# </iframe>
 # </div>
 
 # ### Emissions by Demographic Dividend Stage
@@ -279,7 +284,7 @@ plt.show()
 # It is difficult to discern which specific countries are classified by WorldBank as 'PRE', 'EAR', 'LTE', and 'PST' dividend countries. However, we can be reasonably sure that "developed" countries are in the 'PST' stage, and "developing" countries are in the 'EAR' or 'LTE' stage.
 # Most likely, 'POST' includes countries like the US, Canada, Australia, Japan, and Western Europe, while 'EAR' and 'LTE' include countries like China, India, Brazil, and other developing countries.
 
-# In[163]:
+# In[197]:
 
 
 demographic_dividend_stages = ['PRE', 'EAR', 'LTE', 'PST']
@@ -315,7 +320,7 @@ plt.show()
 # 
 # ## To do a proper correlation analysis, we should aggregate the data by year and country.
 
-# In[164]:
+# In[198]:
 
 
 def explode_by_year(df, measure_name):
@@ -374,7 +379,7 @@ agg_df['gdp_pc'] = agg_df['gdp'] / agg_df['pop']
 countries_agg_df = agg_df[agg_df['iso-3'].isin(country_codes)]
 
 
-# In[165]:
+# In[199]:
 
 
 # columns from 'year' onward are numerical and will be used for correlation analysis
@@ -385,7 +390,7 @@ sns.heatmap(corrs, annot=True, cmap='coolwarm')
 plt.show()
 
 
-# In[166]:
+# In[200]:
 
 
 ranged_countries_agg_df = countries_agg_df.query('1990 <= year <= 2019')
@@ -405,7 +410,7 @@ fig.layout.updatemenus[0].buttons[0].args[1]['transition']['duration'] = 400
 fig.show()
 
 
-# In[167]:
+# In[201]:
 
 
 year_idx = 0
@@ -459,26 +464,15 @@ X_features.columns = new_cols + X_features.columns[len(new_cols):].astype(str).t
 X_features.head()
 
 
-# In[168]:
+# In[202]:
 
 
 lr = skl.LinearRegression()
 lr.fit(X_features, countries_y)
 
-grid = np.full((10, len(X_features.columns)), np.nan)
-for i in range(len(X_features.columns)):
-    mn = X_features.iloc[:, i].min()
-    mx = X_features.iloc[:, i].max()
-    for j in range(10):
-        grid[j, i] = mn + (mx - mn) * j/9
-
 x_name = 'gdp'
 y_name = 'year'
 z_name = 'emissions'
-
-# y3 = lr.predict(grid)
-# i = X_features.columns.tolist().index('hdi')
-# x3 = grid[:, i]
 
 plot_df = X_features.copy()
 plot_df['emissions'] = countries_y.values
@@ -487,38 +481,16 @@ fig = px.scatter_3d(plot_df, x=x_name, y=y_name, z=z_name,
                     color='emissions', opacity=0.7,
                     log_x=True, log_y=False, log_z=True)
 
-# Visualize the model
-## Meshgrid
 x = np.linspace(plot_df[x_name].min(), plot_df[x_name].max(), 100)
 y = np.linspace(plot_df[y_name].min(), plot_df[y_name].max()*2, 100)
 x_surf, y_surf = np.meshgrid(x, y)
 
-## What does the meshgrid look like?
-# print(x)
-# print(y)
-
-
-# Make a dataframe from the meshgrid
 X_surface = pd.DataFrame({
     x_name: x_surf.ravel(),
     y_name: y_surf.ravel()
 })
 
-# display(X_surface.head())
-
-# z_hat = lr.predict(X_surface)
-
-# fig.add_traces(
-#     go.Surface(
-#         x=x_surf,
-#         y=y_surf,
-#         z=z_hat.reshape(x_surf.shape),
-#         opacity=0.5,
-#         colorscale='Blues'
-#     )
-# )
-
-for degree in [1, 2, 3, 4, 5]:
+for degree in [1, 2, 3, 4]:
     model = skp.make_pipeline(
         skpr.PolynomialFeatures(degree=degree),
         skl.LinearRegression()
@@ -527,7 +499,7 @@ for degree in [1, 2, 3, 4, 5]:
     z2_hat = model.predict(X_surface)
     fig.add_traces(
         go.Surface(
-            x=x_surf, 
+            x=x_surf,
             y=y_surf,
             z=z2_hat.reshape(x_surf.shape),
             opacity=0.5,
@@ -542,7 +514,7 @@ fig.show()
 # *What resources and references have you used for this project?*
 # 📝 <!-- Answer Below -->
 
-# In[169]:
+# In[203]:
 
 
 # ⚠️ Make sure you run this cell at the end of your notebook before every submission!
