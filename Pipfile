@@ -8,6 +8,13 @@ ipykernel = "*"
 jupyter = "*"
 notebook = "*"
 black = "*"
+pandas = "*"
+matplotlib = "*"
+requests = "*"
+beautifulsoup4 = "*"
+seaborn = "*"
+plotly = "*"
+scikit-learn = "*"
 
 [dev-packages]
 
